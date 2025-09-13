@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Campus AI Assistant</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background: #1a1a1a;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      margin: 0;
+      color: #4da6ff;
+    }
+    .sidebar p {
+      font-size: 0.9em;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+    .quick-examples button {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      background: #222;
+      border: none;
+      border-radius: 6px;
+      color: #eee;
+      text-align: left;
+      cursor: pointer;
+    }
+    .quick-examples button:hover {
+      background: #333;
+    }
+    .sidebar input {
+      padding: 8px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      width: 100%;
+    }
+    .sidebar button.action {
+      margin-top: 8px;
+      background: #333;
+    }
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      background: #1a1a1a;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+    .chat-header h3 {
+      margin: 0;
+      color: #4da6ff;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      font-size: 0.85em;
+      color: #8f8;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #0f0;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .chat-window {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .message {
+      max-width: 70%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      line-height: 1.4em;
+    }
+    .user-message {
+      background: #2a2a2a;
+      margin-left: auto;
+      text-align: right;
+    }
+    .bot-message {
+      background: #333;
+      margin-right: auto;
+    }
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #333;
+      padding: 10px;
+      background: #1a1a1a;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #222;
+      color: #eee;
+    }
+    .chat-input button {
+      margin-left: 8px;
+      padding: 10px 15px;
+      background: #4da6ff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .options-list {
+      margin: 10px 0;
+    }
+    .options-list li {
+      cursor: pointer;
+      margin: 5px 0;
+      padding: 5px 8px;
+      background: #222;
+      border-radius: 4px;
+      list-style-type: disc;
+    }
+    .options-list li:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Campus AI there to help you!</h2>
+    <p>Your helpful campus assistant </p>
+    <div class="quick-examples">
+      <button>When does Central Library close?</button>
+      <button>Show dining menu at Main Canteen</button>
+      <button>How to request transcript?</button>
+      <button>Where is Administration building?</button>
+    </div>
+    <input type="text" placeholder="Search campus database" />
+    <button class="action">Export DB</button>
+    <button class="action">Import DB</button>
+    <button class="action" onclick="newChat()">New Chat</button>
+    <button class="action">Download Transcript</button>
+  </div>
+  
+  <div class="chat-container">
+    <div class="chat-header">
+      <h3>Campus AI Assistant v1.0</h3>
+      <div class="status"><span class="status-dot"></span>Online</div>
+    </div>
+    <div class="chat-window" id="chat-window">
+      <div class="bot-message message">
+        Welcome! Please select one of the options below:
+        <ul class="options-list">
+          <li onclick="handleOption('library')">Library</li>
+          <li onclick="handleOption('canteen')">Canteen</li>
+          <li onclick="handleOption('dining')">Dining</li>
+          <li onclick="handleOption('administrative office')">Administrative Office</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chat-window');
+    const userInput = document.getElementById('user-input');
+
+    function appendMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+      msg.innerText = text;
+      chatWindow.appendChild(msg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function handleOption(option) {
+      appendMessage(option.charAt(0).toUpperCase() + option.slice(1), 'user');
+      setTimeout(() => {
+        let response = '';
+        if(option === 'library') {
+          response = "Library — Central Library\nHours: 08:00–22:00\nServices: Borrowing, Research help, Study rooms";
+        } else if(option === 'canteen') {
+          response = "Canteen — Main Canteen\nHours: 07:30–20:00\nMenu: Idli, Dosa, Veg Biryani, Coffee";
+        } else if(option === 'dining') {
+          response = "Dining — Dining Hall\nHours: 07:00–21:00\nMenu: Veg/Non-Veg Meals, Snacks, Beverages";
+        } else if(option === 'administrative office') {
+          response = "Administrative Office\nHours: 09:00–17:00\nServices: Student records, Admissions, Certificates";
+        }
+        appendMessage(response, 'bot');
+      }, 500);
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if(text) {
+        appendMessage(text, 'user');
+        userInput.value = '';
+        setTimeout(() => {
+          // Dummy AI response
+          appendMessage("I'm processing your request for: " + text, 'bot');
+        }, 500);
+      }
+    }
+
+    function newChat() {
+      chatWindow.innerHTML = `
+        <div class="bot-message message">
+          New chat started! Please select one of the options below:
+          <ul class="options-list">
+            <li onclick="handleOption('library')">Library</li>
+            <li onclick="handleOption('canteen')">Canteen</li>
+            <li onclick="handleOption('dining')">Dining</li>
+            <li onclick="handleOption('administrative quries')">Administrative Office quiries</li>
+          </ul>
+        </div>`;
+    }
+  </script>
+</body>
+</html>
